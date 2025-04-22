@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001
+      author: courseproject
+      changes:
+        - createTable:
+            tableName: courses
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: varchar(1000)
+              - column:
+                  name: image_url
+                  type: varchar(255)
+              - column:
+                  name: difficulty_level
+                  type: varchar(20)
+              - column:
+                  name: published
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+              - column:
+                  name: updated_at
+                  type: timestamp
+              - column:
+                  name: estimated_duration_hours
+                  type: int
+        - createIndex:
+            indexName: idx_courses_title
+            tableName: courses
+            columns:
+              - column:
+                  name: title
