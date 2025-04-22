@@ -18,44 +18,34 @@ public class CourseService {
     @Transactional
     public CourseDTOResponse createCourse(CourseDTORequest courseRequest) {
         // Check if course with the same title already exists
-        if (courseRepository.existsByTitle(courseRequest.getTitle())) {
-            throw new CourseAlreadyExistsException("Course with title '" + courseRequest.getTitle() + "' already exists");
+        if (courseRepository.existsByTitle(courseRequest.title())) {
+            throw new CourseAlreadyExistsException("Course with title '" + courseRequest.title() + "' already exists");
         }
 
         // Map DTO to entity
-        CourseEntity courseEntity = mapToEntity(courseRequest);
+        CourseEntity courseEntity = CourseEntity.builder()
+                .title(courseRequest.title())
+                .description(courseRequest.description())
+                .imageUrl(courseRequest.imageUrl())
+                .difficultyLevel(courseRequest.difficultyLevel())
+                .published(courseRequest.published())
+                .estimatedDurationHours(courseRequest.estimatedDurationHours())
+                .build();
 
         // Save to database
         CourseEntity savedCourse = courseRepository.save(courseEntity);
 
         // Map entity to response DTO
-        return mapToResponse(savedCourse);
+        return new CourseDTOResponse(
+                savedCourse.getId(),
+                savedCourse.getTitle(),
+                savedCourse.getDescription(),
+                savedCourse.getImageUrl(),
+                savedCourse.getDifficultyLevel(),
+                savedCourse.isPublished(),
+                savedCourse.getCreatedAt(),
+                savedCourse.getUpdatedAt(),
+                savedCourse.getEstimatedDurationHours()
+        );
     }
-
-    private CourseEntity mapToEntity(CourseDTORequest courseRequest) {
-        return CourseEntity.builder()
-                .title(courseRequest.getTitle())
-                .description(courseRequest.getDescription())
-                .imageUrl(courseRequest.getImageUrl())
-                .difficultyLevel(courseRequest.getDifficultyLevel())
-                .published(courseRequest.isPublished())
-                .estimatedDurationHours(courseRequest.getEstimatedDurationHours())
-                .build();
-    }
-
-    private CourseDTOResponse mapToResponse(CourseEntity courseEntity) {
-        return CourseDTOResponse.builder()
-                .id(courseEntity.getId())
-                .title(courseEntity.getTitle())
-                .description(courseEntity.getDescription())
-                .imageUrl(courseEntity.getImageUrl())
-                .difficultyLevel(courseEntity.getDifficultyLevel())
-                .published(courseEntity.isPublished())
-                .createdAt(courseEntity.getCreatedAt())
-                .updatedAt(courseEntity.getUpdatedAt())
-                .estimatedDurationHours(courseEntity.getEstimatedDurationHours())
-                .build();
-    }
-
-
 }
